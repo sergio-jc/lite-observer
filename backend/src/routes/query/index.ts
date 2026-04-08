@@ -8,8 +8,8 @@ import healthQuery from './health.js';
 
 const queryRoutes: FastifyPluginAsync = async (fastify) => {
   await fastify.register(tracesQuery);
-  await fastify.register(metricsQuery);
-  await fastify.register(logsQuery);
+  // await fastify.register(metricsQuery);
+  // await fastify.register(logsQuery);
   await fastify.register(servicesQuery);
   await fastify.register(summaryQuery);
   await fastify.register(healthQuery);
