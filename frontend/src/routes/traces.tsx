@@ -50,7 +50,7 @@ export default function Traces() {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-1 flex-col space-y-2 p-2">
       {data.map((trace) => (
         <Link
           key={trace.traceId}
