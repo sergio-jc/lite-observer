@@ -50,7 +50,7 @@ function SectionJson({
 
             return (
               <React.Fragment key={key}>
-                <div className="p-2 text-muted-foreground break-all">
+                <div className="p-2 text-muted-foreground break-all font-mono">
                   {key}
                 </div>
                 <div className="p-2 break-all font-medium whitespace-pre-wrap">

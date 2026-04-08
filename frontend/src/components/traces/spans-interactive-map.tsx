@@ -137,7 +137,7 @@ const SpansInteractiveMap: React.FC<Props> = ({
     <div className="flex-2 flex flex-col max-h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-center border-b px-3 py-2 text-xs text-muted-foreground font-medium shrink-0">
-        <div className="w-[45%] pr-3">Span</div>
+        <div className="w-[45%] pr-3">Spans</div>
         <div className="flex-1 relative">
           <div className="flex justify-between">
             <span>0ms</span>
