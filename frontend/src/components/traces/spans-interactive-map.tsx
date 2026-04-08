@@ -15,7 +15,7 @@ const SpansInteractiveMap: React.FC<Props> = ({
   setSelectedSpanId,
 }) => {
   return (
-    <div className="min-w-0 flex-2 space-y-2 p-2">
+    <div className="flex-2 p-2 max-h-full overflow-y-auto">
       {spans.map((span) => {
         const isSelected = selectedSpan?.spanId === span.spanId;
 

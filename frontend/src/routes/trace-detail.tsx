@@ -27,10 +27,6 @@ export default function TraceDetail() {
 
   return (
     <div className="space-y-4 flex-1 flex">
-      {/* <div>
-        <h2 className="text-sm font-medium text-muted-foreground">Trace ID</h2>
-        <p className="font-mono text-sm">{traceId}</p>
-      </div> */}
       <TraceSpansPanel spans={spans} />
     </div>
   );
