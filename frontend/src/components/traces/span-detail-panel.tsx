@@ -71,8 +71,8 @@ interface Props {
 
 const SpanDetailPanel: React.FC<Props> = ({ span }) => {
   return (
-    <aside className="shrink-0 border border-border bg-background lg:w-[360px] max-h-full overflow-y-auto flex-1">
-      <div className="min-w-0 p-3">
+    <aside className="shrink-0 border border-border bg-background lg:w-[360px] max-h-full overflow-y-auto flex-1 relative">
+      <div className="min-w-0 p-3 sticky top-0 z-10 bg-background border-b border-border">
         <h3 className="truncate text-md font-semibold">{span.name}</h3>
         <p className="truncate text-xs text-muted-foreground">
           Span ID: <span className="font-mono">{span.spanId}</span>

@@ -25,7 +25,6 @@ export function TraceSpansPanel({ spans }: TraceSpansPanelProps) {
         selectedSpan={selectedSpan}
         setSelectedSpanId={setSelectedSpanId}
       />
-
       {selectedSpan && <SpanDetailPanel span={selectedSpan} />}
     </div>
   );
