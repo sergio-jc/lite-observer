@@ -50,15 +50,15 @@ export default function Traces() {
   }
 
   return (
-    <div className="flex flex-1 flex-col space-y-2 p-2">
+    <div className="flex flex-1 flex-col">
       {data.map((trace) => (
         <Link
           key={trace.traceId}
           to={`/traces/${trace.traceId}`}
-          className="flex items-center justify-between rounded-md border border-border p-4 py-2 transition-colors hover:bg-accent"
+          className="flex items-center justify-between border border-border p-4 py-2 transition-colors hover:bg-accent"
         >
           <div className="space-y-0.5 flex items-center gap-2">
-            <time className="text-xs text-muted-foreground">[{formatUnixNanoToLocale(trace.startTime)}]</time>
+            <time className="text-xs text-muted-foreground font-mono">[{formatUnixNanoToLocale(trace.startTime)}]</time>
             <p className="text-sm font-medium">
               {trace.rootSpanName ?? trace.traceId}
             </p>
