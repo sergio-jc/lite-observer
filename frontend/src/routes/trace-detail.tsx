@@ -1,13 +1,11 @@
 import { useParams } from 'react-router';
 import { useTraceDetail } from '@/hooks/use-traces';
-import { Badge } from '@/components/ui/badge';
+import { TraceSpansPanel } from '@/components/traces/trace-spans-panel';
 import { Skeleton } from '@/components/ui/skeleton';
-import { SPAN_STATUS_LABELS, SPAN_KIND_LABELS } from '@/lib/constants';
 
 export default function TraceDetail() {
   const { traceId } = useParams<{ traceId: string }>();
   const { data: spans, isLoading, error } = useTraceDetail(traceId);
-  console.log("🚀 ~ TraceDetail ~ spans:", spans)
 
   if (isLoading) {
     return (
@@ -28,38 +26,12 @@ export default function TraceDetail() {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
+    <div className="space-y-4 flex-1 flex">
+      {/* <div>
         <h2 className="text-sm font-medium text-muted-foreground">Trace ID</h2>
         <p className="font-mono text-sm">{traceId}</p>
-      </div>
-
-      <div className="space-y-2">
-        {spans.map((span) => (
-          <div
-            key={span.spanId}
-            className="rounded-md border border-border p-3"
-            style={{ marginLeft: span.parentSpanId ? 24 : 0 }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <p className="text-sm font-medium">{span.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {span.serviceName} &middot; {SPAN_KIND_LABELS[span.kind] ?? 'Unknown'}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">
-                  {span.durationMs.toFixed(1)}ms
-                </span>
-                <Badge variant={span.statusCode === 2 ? 'destructive' : 'secondary'}>
-                  {SPAN_STATUS_LABELS[span.statusCode] ?? 'Unknown'}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      </div> */}
+      <TraceSpansPanel spans={spans} />
     </div>
   );
 }
