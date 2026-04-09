@@ -13,6 +13,12 @@ export const traceSummarySchema = z.object({
 });
 export type TraceSummary = z.infer<typeof traceSummarySchema>;
 
+export const traceListResponseSchema = z.object({
+  data: z.array(traceSummarySchema),
+  total: z.number(),
+});
+export type TraceListResponse = z.infer<typeof traceListResponseSchema>;
+
 export const spanSchema = z.object({
   id: z.number(),
   traceId: z.string(),

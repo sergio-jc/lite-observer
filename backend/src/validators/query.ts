@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
 export const traceListQuerySchema = z.object({
-  service: z.string().optional(),
+  search: z.string().optional(),
   status: z.enum(['unset', 'ok', 'error']).optional(),
   from: z.string().optional(),
   to: z.string().optional(),
-  limit: z.coerce.number().min(1).max(1000).default(100),
+  limit: z.coerce.number().min(1).max(500).default(25),
+  offset: z.coerce.number().min(0).default(0),
 });
 
 export const metricListQuerySchema = z.object({

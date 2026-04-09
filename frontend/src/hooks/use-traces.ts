@@ -1,25 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
-import type { TraceSummary, Span } from '@/types/api';
+import type { TraceListResponse, Span } from '@/types/api';
 
 interface TraceListParams {
-  service?: string;
+  search?: string;
   status?: 'unset' | 'ok' | 'error';
   from?: string;
   to?: string;
   limit?: number;
+  offset?: number;
 }
 
 export function useTraces(params: TraceListParams = {}) {
   return useQuery({
     queryKey: ['traces', params],
     queryFn: () =>
-      apiFetch<TraceSummary[]>('/api/traces', {
-        service: params.service,
+      apiFetch<TraceListResponse>('/api/traces', {
+        search: params.search,
         status: params.status,
         from: params.from,
         to: params.to,
         limit: params.limit,
+        offset: params.offset,
       }),
   });
 }
