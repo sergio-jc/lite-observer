@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+# Lite Observer Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Web client for Lite Observer: explore OpenTelemetry traces against the Lite Observer API. Trace views are the primary experience today.
 
-Currently, two official plugins are available:
+![Lite Observer trace explorer UI](../assets/lite-observer-frontend.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Trace list** -> Scan recent traces with timing, service context, span count, duration, and status at a glance.
+- **Search and filters** -> Narrow the list by free-text search and by outcome (all, success, error, or unset) before opening a trace.
+- **Pagination and refresh** -> Move through large result sets in pages and pull the latest data when you need it.
+- **Trace detail** -> Open a single trace to see how its spans relate in hierarchy and on a relative timeline.
+- **Span inspection** -> Review attributes, resource metadata, status, events, and links in a side panel; copy a span as JSON for debugging.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+- **React 19** and **TypeScript**
+- **Vite 8**
+- **React Router 7**
+- **TanStack Query 5** for data fetching and caching
+- **Tailwind CSS 4** for styling
+- **Zod** for API-oriented schemas and types
+- **Lucide React** for icons
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The UI is a thin layer over the Lite Observer API. In practice you will run Postgres (or point at an existing database), start the API, and only then point this app at that server so traces can load in the browser.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**Prerequisites**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Node.js** 20 or newer.
+- **[pnpm](https://pnpm.io)** — the repo includes `pnpm-lock.yaml`; using pnpm keeps installs aligned with the lockfile.
+- **Network access to the API** from your machine — the browser will call whatever you put in `VITE_API_URL`, so the Lite Observer server must already be listening there.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> **Note:** The frontend will not work on its own. You need a **database** (Postgres for local development) and the Lite Observer **backend** both configured and running so the API can serve data. For step-by-step instructions—connection string, migrations, server env vars, and how to start the API—see the **[backend README](../backend/README.md)**.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**Run the frontend**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. **Configure the client** — from `frontend/`, copy the sample environment file and set the API base URL your Vite app should use:
+
+   ```bash
+   cp .env.sample .env
+   ```
+
+   Edit `.env` and set `VITE_API_URL` (for example `http://localhost:3001`). If the backend checks `CORS_ORIGIN`, it must include the origin where you open the UI (Vite’s default dev server is often `http://localhost:5173`).
+
+2. **Install dependencies** — still in `frontend/`:
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Start the dev server**:
+
+   ```bash
+   pnpm dev
+   ```
+
+   You should then get the trace explorer at `http://localhost:5173` (unless Vite prints a different URL).
+
+## Project Structure
+
+```text
+src/
+  app.tsx                  # active routes
+  routes/
+    traces.tsx             # trace list
+    trace-detail.tsx       # trace detail
+  hooks/
+    use-traces.ts          # trace queries
+  components/traces/
+    traces-filter-bar.tsx
+    trace-spans-panel.tsx
+    spans-interactive-map.tsx
+    span-detail-panel.tsx
+  lib/api.ts               # fetch helper + query params
+  types/api.ts             # types and schemas
 ```

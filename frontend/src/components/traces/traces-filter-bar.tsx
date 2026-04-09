@@ -91,7 +91,7 @@ export function TracesFilterBar({
       {/* Paginación */}
       <div className="flex items-center gap-2 shrink-0">
         <span className="text-xs text-muted-foreground tabular-nums">
-          {totalItems === 0 ? "Sin resultados" : `${start}–${end} de ${totalItems}`}
+          {totalItems === 0 ? "Sin resultados" : `${start}–${end} of ${totalItems}`}
         </span>
         <Button
           variant="outline"
