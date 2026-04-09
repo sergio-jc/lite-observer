@@ -120,33 +120,33 @@ const SpanDetailPanel: React.FC<Props> = ({ span }) => {
       </div> */}
       <div className="grid grid-cols-2 text-xs border border-border divide-x divide-y divide-border">
         <div className="p-2">
-          <p className="text-muted-foreground">Servicio</p>
+          <p className="text-muted-foreground">Service</p>
           <p className="font-medium">{span.serviceName}</p>
         </div>
         <div className="p-2">
-          <p className="text-muted-foreground">Tipo</p>
+          <p className="text-muted-foreground">Type</p>
           <p className="font-medium">
             {SPAN_KIND_LABELS[span.kind] ?? "Unknown"}
           </p>
         </div>
         <div className="p-2">
-          <p className="text-muted-foreground">Duracion</p>
+          <p className="text-muted-foreground">Duration</p>
           <p className="font-medium">{span.durationMs.toFixed(1)}ms</p>
         </div>
         <div className="p-2">
-          <p className="text-muted-foreground">Estado</p>
+          <p className="text-muted-foreground">Status</p>
           <p className="font-medium">
             {SPAN_STATUS_LABELS[span.statusCode] ?? "Unknown"}
           </p>
         </div>
         <div className="p-2">
-          <p className="text-muted-foreground">Inicio</p>
+          <p className="text-muted-foreground">Start Time</p>
           <p className="font-medium">
             {formatUnixNanoToLocale(span.startTimeUnixNano)}
           </p>
         </div>
         <div className="p-2">
-          <p className="text-muted-foreground">Finalización</p>
+          <p className="text-muted-foreground">End Time</p>
           <p className="font-medium">
             {formatUnixNanoToLocale(span.endTimeUnixNano)}
           </p>
@@ -171,7 +171,7 @@ const SpanDetailPanel: React.FC<Props> = ({ span }) => {
         value={span.resourceAttributes}
       />
       <SectionKeyValuePairs
-        title="Identificadores"
+        title="Identifiers"
         value={{
           traceId: span.traceId,
           parentSpanId: span.parentSpanId,

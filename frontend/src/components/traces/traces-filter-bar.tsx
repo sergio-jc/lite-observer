@@ -49,7 +49,7 @@ export function TracesFilterBar({
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
         <Input
           className="pl-8"
-          placeholder="Buscar por nombre de trace..."
+          placeholder="Search by trace name..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
