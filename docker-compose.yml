@@ -7,9 +7,41 @@ services:
       POSTGRES_USER: lite
       POSTGRES_PASSWORD: lite_dev
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lite -d lite_observer"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
+    environment:
+      DATABASE_URL: postgresql://lite:lite_dev@postgres:5432/lite_observer
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:${FRONTEND_PORT:-3000}
+      LOG_LEVEL: info
+      MAX_BODY_SIZE: 5242880
+      RETENTION_DAYS: 7
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:${BACKEND_PORT:-3001}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
