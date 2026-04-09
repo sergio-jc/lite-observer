@@ -1,6 +1,8 @@
 import type { Span } from "@/types/api";
 import React from "react";
 import { SPAN_KIND_LABELS, SPAN_STATUS_LABELS } from "@/lib/constants";
+import { Button } from "../ui/button";
+import { Clipboard } from "lucide-react";
 
 function formatUnixNanoToLocale(unixNano?: string | null) {
   if (!unixNano) return "—";
@@ -25,7 +27,27 @@ function stringifyValue(value: unknown) {
   }
 }
 
-function SectionJson({
+const SectionArea: React.FC<
+  React.PropsWithChildren<{ title: string; isEmpty: boolean }>
+> = (props) => {
+  const { children, title, isEmpty } = props;
+  return (
+    <section className="text-xs border-border border-b">
+      <h4 className="text-muted-foreground text-sm p-2 border-border border-b">
+        {title}
+      </h4>
+      {isEmpty ? (
+        <p className="text-muted-foreground opacity-50 p-2 text-center">
+          Sin datos
+        </p>
+      ) : (
+        children
+      )}
+    </section>
+  );
+};
+
+function SectionKeyValuePairs({
   title,
   value,
 }: {
@@ -36,32 +58,27 @@ function SectionJson({
   const entries = value ? Object.entries(value) : [];
 
   return (
-    <section className="text-xs">
-      <h4 className="text-muted-foreground text-sm p-2">{title}</h4>
-      {isEmpty ? (
-        <p className="text-muted-foreground px-2 pb-2">Sin datos</p>
-      ) : (
-        <div className="grid grid-cols-2 border border-border divide-x divide-y divide-border">
-          {entries.map(([key, rawValue]) => {
-            const parsedValue =
-              typeof rawValue === "string"
-                ? rawValue
-                : JSON.stringify(rawValue, null, 2);
+    <SectionArea title={title} isEmpty={isEmpty}>
+      <div className="grid grid-cols-2 border border-border divide-x divide-y divide-border">
+        {entries.map(([key, rawValue]) => {
+          const parsedValue =
+            typeof rawValue === "string"
+              ? rawValue
+              : JSON.stringify(rawValue, null, 2);
 
-            return (
-              <React.Fragment key={key}>
-                <div className="p-2 text-muted-foreground break-all font-mono">
-                  {key}
-                </div>
-                <div className="p-2 break-all font-medium whitespace-pre-wrap">
-                  {parsedValue}
-                </div>
-              </React.Fragment>
-            );
-          })}
-        </div>
-      )}
-    </section>
+          return (
+            <React.Fragment key={key}>
+              <div className="p-2 text-muted-foreground break-all font-mono">
+                {key}
+              </div>
+              <div className="p-2 break-all font-medium whitespace-pre-wrap">
+                {parsedValue}
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </SectionArea>
   );
 }
 
@@ -72,11 +89,24 @@ interface Props {
 const SpanDetailPanel: React.FC<Props> = ({ span }) => {
   return (
     <aside className="shrink-0 border border-border bg-background lg:w-[360px] max-h-full overflow-y-auto flex-1 relative">
-      <div className="min-w-0 p-3 sticky top-0 z-10 bg-background border-b border-border">
-        <h3 className="truncate text-md font-semibold">{span.name}</h3>
-        <p className="truncate text-xs text-muted-foreground">
-          Span ID: <span className="font-mono">{span.spanId}</span>
-        </p>
+      <div className="min-w-0 p-3 sticky top-0 z-10 bg-background border-b border-border flex items-center justify-between max-w-full">
+        <div className="flex-1 flex-col gap-1 max-w-full min-w-0" >
+          <h3 className="truncate text-md font-semibold">{span.name}</h3>
+          <p className="truncate text-xs text-muted-foreground">
+            Span ID: <span className="font-mono">{span.spanId}</span>
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            navigator.clipboard.writeText(JSON.stringify(span, null, 2));
+          }}
+          aria-label="Copy Content"
+        >
+          <Clipboard />
+          Copy Content
+        </Button>
       </div>
       {/* <div className="flex items-start justify-between gap-2">
         <Button
@@ -88,7 +118,6 @@ const SpanDetailPanel: React.FC<Props> = ({ span }) => {
               Cerrar
             </Button>
       </div> */}
-
       <div className="grid grid-cols-2 text-xs border border-border divide-x divide-y divide-border">
         <div className="p-2">
           <p className="text-muted-foreground">Servicio</p>
@@ -123,59 +152,43 @@ const SpanDetailPanel: React.FC<Props> = ({ span }) => {
           </p>
         </div>
       </div>
-
-      <section className="border-x border-b border-border p-2 text-xs space-y-1.5 first:border-t">
-        <h4 className="text-sm text-muted-foreground">Status message</h4>
+      <SectionArea title="Status message" isEmpty={!span.statusMessage}>
         <p>{stringifyValue(span.statusMessage)}</p>
-      </section>
-
-      <section className="border-x border-b border-border p-2 text-xs space-y-1.5 first:border-t">
-        <h4 className="text-sm text-muted-foreground">Scope</h4>
-        <div>
-          <p>
-            <span className="text-muted-foreground">Nombre:</span>{" "}
-            {stringifyValue(span.scopeName)}
-          </p>
-          <p>
-            <span className="text-muted-foreground">Version:</span>{" "}
-            {stringifyValue(span.scopeVersion)}
-          </p>
-        </div>
-      </section>
-
-      <SectionJson title="Span Attributes" value={span.spanAttributes} />
-      <SectionJson
+      </SectionArea>
+      <SectionKeyValuePairs
+        title="Scope"
+        value={{
+          name: span.scopeName,
+          version: span.scopeVersion,
+        }}
+      />
+      <SectionKeyValuePairs
+        title="Span Attributes"
+        value={span.spanAttributes}
+      />
+      <SectionKeyValuePairs
         title="Resource Attributes"
         value={span.resourceAttributes}
       />
-
-      <section className="border-x border-b border-border p-2 text-xs space-y-1.5 first:border-t">
-        <h4 className="text-sm text-muted-foreground">Events</h4>
-        <pre className="max-h-56 overflow-auto">
+      <SectionKeyValuePairs
+        title="Identificadores"
+        value={{
+          traceId: span.traceId,
+          parentSpanId: span.parentSpanId,
+          spanId: span.spanId,
+        }}
+      />
+      <SectionArea title="Events" isEmpty={!span.events}>
+        <pre className="max-h-56 overflow-auto p-2">
           {stringifyValue(span.events)}
         </pre>
-      </section>
+      </SectionArea>
 
-      <section className="border-x border-b border-border p-2 text-xs space-y-1.5 first:border-t">
-        <h4 className="text-sm text-muted-foreground">Links</h4>
-        <pre className="max-h-56 overflow-auto">
+      <SectionArea title="Links" isEmpty={!span.links}>
+        <pre className="max-h-56 overflow-auto p-2">
           {stringifyValue(span.links)}
         </pre>
-      </section>
-
-      <section className="border-x border-b border-border p-2 text-xs space-y-1.5 first:border-t">
-        <h4 className="text-sm text-muted-foreground">Identificadores</h4>
-        <div>
-          <p className="break-all">
-            <span className="text-muted-foreground">traceId:</span>{" "}
-            {span.traceId}
-          </p>
-          <p className="break-all">
-            <span className="text-muted-foreground">parentSpanId:</span>{" "}
-            {stringifyValue(span.parentSpanId)}
-          </p>
-        </div>
-      </section>
+      </SectionArea>
     </aside>
   );
 };
