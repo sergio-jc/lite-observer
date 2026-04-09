@@ -4,7 +4,10 @@ import { useTraces } from "@/hooks/use-traces";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SPAN_STATUS_LABELS } from "@/lib/constants";
-import { TracesFilterBar, type StatusFilter } from "@/components/traces/traces-filter-bar";
+import {
+  TracesFilterBar,
+  type StatusFilter,
+} from "@/components/traces/traces-filter-bar";
 
 const PAGE_SIZE = 25;
 
@@ -15,14 +18,16 @@ function formatUnixNanoToLocale(unixNano?: string | null) {
     const milliseconds = Number(BigInt(unixNano) / 1000000n);
     const date = new Date(milliseconds);
 
-    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString("es-ES", {
-      year: "2-digit",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    return Number.isNaN(date.getTime())
+      ? "—"
+      : date.toLocaleString("es-ES", {
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
   } catch {
     return "—";
   }
@@ -65,7 +70,7 @@ export default function Traces() {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col max-h-full overflow-y-auto">
       <TracesFilterBar
         search={searchInput}
         onSearchChange={handleSearchChange}
@@ -79,55 +84,66 @@ export default function Traces() {
         totalItems={totalItems}
         pageSize={PAGE_SIZE}
       />
-
-      {isLoading ? (
-        <div className="space-y-3 p-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      ) : error ? (
-        <p className="text-destructive p-3">
-          Error al cargar traces: {error.message}
-        </p>
-      ) : !data?.data || data.data.length === 0 ? (
-        <p className="text-muted-foreground p-3">No hay traces registrados.</p>
-      ) : (
-        data.data.map((trace) => (
-          <Link
-            key={trace.traceId}
-            to={`/traces/${trace.traceId}`}
-            className="flex items-center justify-between border-b border-border p-4 py-2 transition-colors hover:bg-accent"
-          >
-            <div className="space-y-0.5 flex items-center gap-2">
-              <time className="text-xs text-muted-foreground font-mono">[{formatUnixNanoToLocale(trace.startTime)}]</time>
-              <p className="text-sm font-medium">
-                {trace.rootSpanName ?? trace.traceId}
-              </p>
-              {[`${trace.serviceName}`, `${trace.spanCount} spans`].map(
-                (item) => (
-                  <p className="flex items-center gap-1" key={item}>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-xs text-muted-foreground">{item}</span>
-                  </p>
-                ),
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground">
-                {trace.durationMs != null
-                  ? `${trace.durationMs.toFixed(1)}ms`
-                  : "—"}
-              </span>
-              <Badge
-                variant={trace.statusCode === 2 ? "destructive" : "secondary"}
-              >
-                {SPAN_STATUS_LABELS[trace.statusCode ?? 0] ?? "Unknown"}
-              </Badge>
-            </div>
-          </Link>
-        ))
-      )}
+      <div className="flex flex-1 flex-col max-h-full overflow-y-auto">
+        {isLoading ? (
+          <div className="space-y-3 p-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-1 flex-col items-center justify-center">
+            <p className="text-destructive p-3 font-mono">
+              Error al cargar traces: {error.message}
+            </p>
+          </div>
+        ) : !data?.data || data.data.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center">
+            <p className="text-muted-foreground p-3 font-mono">
+              No hay traces registrados.
+            </p>
+          </div>
+        ) : (
+          data.data.map((trace) => (
+            <Link
+              key={trace.traceId}
+              to={`/traces/${trace.traceId}`}
+              className="flex items-center justify-between border-b border-border p-4 py-2 transition-colors hover:bg-accent"
+            >
+              <div className="space-y-0.5 flex items-center gap-2">
+                <time className="text-xs text-muted-foreground font-mono">
+                  [{formatUnixNanoToLocale(trace.startTime)}]
+                </time>
+                <p className="text-sm font-medium">
+                  {trace.rootSpanName ?? trace.traceId}
+                </p>
+                {[`${trace.serviceName}`, `${trace.spanCount} spans`].map(
+                  (item) => (
+                    <p className="flex items-center gap-1" key={item}>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-xs text-muted-foreground">
+                        {item}
+                      </span>
+                    </p>
+                  ),
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground">
+                  {trace.durationMs != null
+                    ? `${trace.durationMs.toFixed(1)}ms`
+                    : "—"}
+                </span>
+                <Badge
+                  variant={trace.statusCode === 2 ? "destructive" : "secondary"}
+                >
+                  {SPAN_STATUS_LABELS[trace.statusCode ?? 0] ?? "Unknown"}
+                </Badge>
+              </div>
+            </Link>
+          ))
+        )}
+      </div>
     </div>
   );
 }
